@@ -90,6 +90,15 @@
 		</div>
 		<h1>게시글 목록(총 : <%=totalCount %>개)</h1>
 		<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 입력</a>
+		<form action="<%=request.getContextPath()%>/board/searchBoardAction.jsp" method="post">
+		<select class="form-select" name="selectSearch">
+			<option value="categoryName">주제별</option>
+			<option value=" boardTitle">제목</option>
+			<option value="boardContent">내용</option>
+		</select>
+		<input type="text" name="search">
+		<button type="sumit" class="btn btn-dark">검색</button>
+		</form>
 		<table class="table table-hover">
 			<thead>
 				<tr>

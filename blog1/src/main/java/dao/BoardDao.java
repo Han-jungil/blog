@@ -273,5 +273,33 @@ public class BoardDao {
 			conn.close();
 			return list;	// 값 리턴
 		}
+		
+		// searchBoardAciton 검색
+		public ArrayList<Board> searchBoardListByPage(String categoryName, int beginRow, int rowPerPage) throws Exception {
+			// 데이터베이스 자원 준비
+			ArrayList<Board> list = new ArrayList<Board>();
+			Class.forName("org.mariadb.jdbc.Driver");
+			System.out.println("드라이버 로딩 성공"); //디버깅
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			String sql = null;
+			
+			// 디비접속
+			String dburl = "jdbc:mariadb://localhost:3306/blog";
+			String dbuser = "root";
+			String dbpw = "java1234";
+			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
+			System.out.println("conn : " + conn); // 디버깅
+			
+			// SQL문 실행
+			
+			
+			// 데이터베이스 자원들 반환
+			rs.close();
+			stmt.close();
+			conn.close();
+			return list;	// 값 리턴
+		}
 			
 }
