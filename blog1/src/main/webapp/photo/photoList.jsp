@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.*" %>
-<%@ page import="vo.*" %>
-<%@ page import="dao.*" %>
+<%@ page import = "java.sql.*" %>
+<%@ page import = "java.util.*" %>
+<%@ page import = "vo.*" %>
+<%@page import ="dao.*" %>
 <%
+	//한글호환
+	request.setCharacterEncoding("utf-8");
+
 	//페이지 설정
 	// boardList페이지 실행하면 최근 10개의 목록을 보요주고 1page로 설정
 	int currentPage = 1; // 현재페이지의 기본값이 1페이지
@@ -27,7 +31,26 @@
 	
 	// 카테고리별 행의 수
 	photoDao = new PhotoDao();
-	ArrayList<Photo> List = photoDao.selectPhotoListByPage(photoCategoryName, beginRow, rowPerPage);
+	ArrayList<Photo> list = photoDao.selectPhotoListByPage(photoCategoryName, beginRow, rowPerPage);
+	
+	// 검색
+		String search =  request.getParameter("search");
+		if(search != null &&!search.equals("")) {
+			photoCategoryName = "";
+			//요청값 받기
+			photoCategoryName = request.getParameter("photoCategoryName");
+			String selectSearch = request.getParameter("selectSearch");
+			search = request.getParameter("search");
+							
+			// 디버깅
+			System.out.println("selectSearch "+photoCategoryName);
+			System.out.println("selectSearch "+selectSearch);
+			System.out.println("selectSearch "+search);
+							
+			//요청값 넣기
+			PhotoDao photodao = new PhotoDao();
+			list = photodao.searchPhotoListByPage(selectSearch, search, photoCategoryName, beginRow, rowPerPage);
+		}
 	
 	// 전체 행의수
 	int totalCount = photoDao.selectPhotoTotalRow();
@@ -88,9 +111,35 @@
 				<p>GDJ46기 블로그과제</p>
 			</div>
 			<h1>이미지 목록(총 :<%=totalCount %> 개)</h1>
-			<div>
-				<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/photo/insertPhotoForm.jsp">이미지 입력</a>
-			</div>
+		<form action="<%=request.getContextPath()%>/photo/photoList.jsp" method="get">
+	      <div  class="row">
+	      <div class = "col-sm-4">
+	      </div>
+	      <div class = "col-sm-8">
+	         <p class ="text-right"> 
+	            <select class="form-select" name="photoCategoryName">
+	             <option value="">전체</option>
+	                <%
+					for(HashMap<String, Object> m : photoCategoryNameList) {
+					%>
+	                    <option><%=m.get("photoCategoryName")%></option>
+	                <%
+	                   }
+	                %>
+	            </select>
+	            <select class="form-select" name="selectSearch">
+	           		<option value="photoName">이름</option>
+	           		<option value="writer">작성자</option>
+	            </select>
+	            <input type="text" name="search">
+	            <button type="submit" class="btn btn-dark">검색</button>
+	         </p>
+	     </div>
+	     </div>
+	     </form>
+		 <div>
+			<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/photo/insertPhotoForm.jsp">이미지 입력</a>
+		</div>
 		<!-- 이미지 입력 -->
 		<table  class="table table-hover">
 			<tr>
@@ -104,10 +153,10 @@
 				// td의 갯수 5의 배수가 되도록
 				// list.size()가 1~5 - td는 5개
 				// list.size()가 6~10 - td는 10개
-				System.out.println("리스트사이즈" + List.size());
+				System.out.println("리스트사이즈" + list.size());
 				
 				int startIdx = 1;
-				int endIdx = (((List.size()-1)/5)+1)*5; // 5의 배수가 되어야 한다. (한줄에 5개씩 출력하기로...)
+				int endIdx = (((list.size()-1)/5)+1)*5; // 5의 배수가 되어야 한다. (한줄에 5개씩 출력하기로...)
 				System.out.println("endIdx"+endIdx);
 				
 			//	for(Photo p : List) {	// size()만큼 반복되므로 5의배수가 아닌 경우도 생긴다.
@@ -118,12 +167,12 @@
 					</tr><tr>
 			<%
 					}
-					if(i<List.size()) {
+					if(i<list.size()) {
 			%>
 					<td>
-						<a href="<%=request.getContextPath()%>/photo/selectPhotoNew.jsp?photoNo=<%=List.get(i).getPhotoNo()%>">
-							<img src="<%=request.getContextPath()%>/upload/<%=List.get(i).getPhotoName() %>" width="200" height="200">
-							<div><%=List.get(i).getPhotoName() %></div>
+						<a href="<%=request.getContextPath()%>/photo/selectPhotoNew.jsp?photoNo=<%=list.get(i).getPhotoNo()%>">
+							<img src="<%=request.getContextPath()%>/upload/<%=list.get(i).getPhotoName() %>" width="200" height="200">
+							<div><%=list.get(i).getPhotoName() %></div>
 							<!-- 상세보기에서는 원본이미지 크기로 -->
 						</a>
 					</td>

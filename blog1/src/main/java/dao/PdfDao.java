@@ -4,6 +4,7 @@ import java.util.*;
 import vo.*;
 
 public class PdfDao {
+	//한글호환
 	//생성자 메서드
 	public PdfDao() {}
 	
@@ -154,5 +155,59 @@ public class PdfDao {
 			conn.close();
 				
 			return list; // 값 리턴
-			}	
+			}
+			
+			// searchPdfList 검색
+				public ArrayList<Pdf> searchPdfListByPage(String selectSearch, String search, int beginRow, int rowPerPage) throws Exception {
+				// 데이터베이스 자원 준비
+				ArrayList<Pdf> list = new ArrayList<Pdf>();
+				Class.forName("org.mariadb.jdbc.Driver");
+				System.out.println("드라이버 로딩 성공"); //디버깅
+				Connection conn = null;
+				PreparedStatement stmt = null;
+				ResultSet rs = null;
+				String sql = null;
+				
+				// 디비접속
+				String dburl = "jdbc:mariadb://localhost:3306/blog";
+				String dbuser = "root";
+				String dbpw = "java1234";
+				conn = DriverManager.getConnection(dburl, dbuser, dbpw);
+				System.out.println("conn : " + conn); // 디버깅
+				
+				// SQL문 실행
+				if(selectSearch.equals("writer")) {	//	검색이 공백이면
+					sql = "SELECT pdf_no pdfNo, pdf_original_name pdfOriginalName, writer, create_date createDate FROM pdf WHERE writer LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+					stmt = conn.prepareStatement(sql);
+					stmt.setString(1, "%"+search+"%");
+					stmt.setInt(2, beginRow);
+					stmt.setInt(3, rowPerPage);
+				} else {	// 검색이 공백이 아니고 제목+내용검색인 경우
+					sql = "SELECT pdf_no pdfNo, pdf_original_name pdfOriginalName, writer, create_date createDate FROM pdf WHERE pdf_original_name  LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+					stmt = conn.prepareStatement(sql);	//?값 구하기
+					stmt.setString(1, "%"+search+"%");
+					stmt.setInt(2, beginRow);
+					stmt.setInt(3, rowPerPage);
+				}
+				System.out.println("sql searchBoardListByPage : " + stmt);	//디버깅
+				rs = stmt.executeQuery();
+				// 데이터베이스 로직 끝
+				
+				// 데이터 변환(가공)
+				while(rs.next()) {
+					Pdf p = new Pdf();
+					p.setPdfNo(rs.getInt("PdfNo"));		
+					p.setWriter(rs.getString("writer"));		
+					p.setPdfOriginalName(rs.getString("pdfOriginalName"));							
+					p.setCreateDate(rs.getString("createDate"));	
+					list.add(p);
+				}
+				
+				// 데이터베이스 자원들 반환
+				rs.close();
+				stmt.close();
+				conn.close();
+				return list;	// 값 리턴
+			}			
+			
 }

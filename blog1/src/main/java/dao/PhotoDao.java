@@ -246,5 +246,62 @@ public class PhotoDao {
 			conn.close();
 			return list;  // 값 리턴
 			}
+			
+			
+		// searchPhotoList 검색
+			public ArrayList<Photo> searchPhotoListByPage(String selectSearch, String search, String photoCategoryName, int beginRow, int rowPerPage) throws Exception {
+			// 데이터베이스 자원 준비
+			ArrayList<Photo> list = new ArrayList<Photo>();
+			Class.forName("org.mariadb.jdbc.Driver");
+			System.out.println("드라이버 로딩 성공"); //디버깅
+			Connection conn = null;
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			String sql = null;
+			
+			// 디비접속
+			String dburl = "jdbc:mariadb://localhost:3306/blog";
+			String dbuser = "root";
+			String dbpw = "java1234";
+			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
+			System.out.println("conn : " + conn); // 디버깅
+			
+			// SQL문 실행
+			if(selectSearch.equals("writer")) {	//	검색이 작성자이면
+				sql = "SELECT photo_no photoNo, photo_name photoName, writer, photo_categoryName photoCategoryName, create_date createDate FROM photo WHERE writer LIKE ? AND photo_categoryName LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, "%"+search+"%");
+				stmt.setString(2, "%"+photoCategoryName+"%");
+				stmt.setInt(3, beginRow);
+				stmt.setInt(4, rowPerPage);
+			} else {	// 검색이 사진이름이면
+				sql = "SELECT photo_no photoNo, photo_name photoName, writer, photo_categoryName photoCategoryName, create_date createDate FROM photo WHERE photo_name LIKE ? AND photo_categoryName LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+				stmt = conn.prepareStatement(sql);	//?값 구하기
+				stmt.setString(1, "%"+search+"%");
+				stmt.setString(2, "%"+photoCategoryName+"%");
+				stmt.setInt(3, beginRow);
+				stmt.setInt(4, rowPerPage);
+			}
+			System.out.println("sql searchPhotoListByPage : " + stmt);	//디버깅
+			rs = stmt.executeQuery();
+			// 데이터베이스 로직 끝
+			
+			// 데이터 변환(가공)
+			while(rs.next()) {
+				Photo p = new Photo();
+				p.setPhotoNo(rs.getInt("photoNo"));		
+				p.setPhotoCategoryName(rs.getString("photoCategoryName"));	
+				p.setPhotoName(rs.getString("photoName"));
+				p.setWriter(rs.getString("writer"));							
+				p.setCreateDate(rs.getString("createDate"));	
+				list.add(p);
+			}
+			
+			// 데이터베이스 자원들 반환
+			rs.close();
+			stmt.close();
+			conn.close();
+			return list;	// 값 리턴
+		}
 }
 

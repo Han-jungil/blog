@@ -274,8 +274,8 @@ public class BoardDao {
 			return list;	// 값 리턴
 		}
 		
-		// searchBoardAciton 검색
-		public ArrayList<Board> searchBoardListByPage(String categoryName, int beginRow, int rowPerPage) throws Exception {
+		// searchBoardList 검색
+			public ArrayList<Board> searchBoardListByPage(String selectSearch, String search, String categoryName, int beginRow, int rowPerPage) throws Exception {
 			// 데이터베이스 자원 준비
 			ArrayList<Board> list = new ArrayList<Board>();
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -293,7 +293,47 @@ public class BoardDao {
 			System.out.println("conn : " + conn); // 디버깅
 			
 			// SQL문 실행
+			if(selectSearch.equals("")) {	//	검색이 공백이면
+				sql = "SELECT board_no boardNo, category_name categoryName, board_title boardTitle, create_date createDate FROM board ORDER BY create_date DESC LIMIT ?, ?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1, beginRow);
+				stmt.setInt(2, rowPerPage);
+			} else if(selectSearch.equals("boardTitle")) {	// 검색이 공백이 아니고 제목검색인 경우
+				sql = "SELECT board_no boardNo, category_name categoryName, board_title boardTitle, create_date createDate FROM board WHERE board_title LIKE ? AND category_name LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+				stmt = conn.prepareStatement(sql);	//?값 구하기
+				stmt.setString(1, "%"+search+"%");
+				stmt.setString(2, "%"+categoryName+"%");
+				stmt.setInt(3, beginRow);
+				stmt.setInt(4, rowPerPage);
+			} else if(selectSearch.equals("boardContent")) {	// 검색이 공백이 아니고 내용검색인 경우
+				sql = "SELECT board_no boardNo, category_name categoryName, board_title boardTitle, create_date createDate FROM board WHERE board_content LIKE ? AND category_name LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+				stmt = conn.prepareStatement(sql);	//?값 구하기
+				stmt.setString(1, "%"+search+"%");
+				stmt.setString(2, "%"+categoryName+"%");
+				stmt.setInt(3, beginRow);
+				stmt.setInt(4, rowPerPage);
+			} else {	// 검색이 공백이 아니고 제목+내용검색인 경우
+				sql = "SELECT board_no boardNo, category_name categoryName, board_title boardTitle, create_date createDate FROM board WHERE board_title LIKE ? AND board_content LIKE ? AND category_name LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+				stmt = conn.prepareStatement(sql);	//?값 구하기
+				stmt.setString(1, "%"+search+"%");
+				stmt.setString(2, "%"+search+"%");
+				stmt.setString(3, "%"+categoryName+"%");
+				stmt.setInt(4, beginRow);
+				stmt.setInt(5, rowPerPage);
+			}
+			System.out.println("sql searchBoardListByPage : " + stmt);	//디버깅
+			rs = stmt.executeQuery();
+			// 데이터베이스 로직 끝
 			
+			// 데이터 변환(가공)
+			while(rs.next()) {
+				Board b = new Board();
+				b.setBoardNo(rs.getInt("boardNo"));		
+				b.setCategoryName(rs.getString("categoryName"));		
+				b.setBoardTitle(rs.getString("boardTitle"));							
+				b.setCreateDate(rs.getString("createDate"));	
+				list.add(b);
+			}
 			
 			// 데이터베이스 자원들 반환
 			rs.close();

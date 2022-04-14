@@ -3,6 +3,9 @@
 <%@ page import = "vo.Guestbook" %>
 <%@ page import = "java.util.ArrayList" %>
 <%
+	//한글호환
+	request.setCharacterEncoding("utf-8");
+
 	//페이지 설정
 	int currentPage = 1;	// 현재페이지의 기본값이 1페이지
 	if(request.getParameter("currentPage") != null) { // 이전, 다음 링크를 통해서 들어왔다면
@@ -17,6 +20,24 @@
 	// guestbook 갯수를 반환
 	GuestbookDao guestbookDao = new GuestbookDao();
 	ArrayList<Guestbook> list = guestbookDao.selectGuestbookListByPage(beginRow, rowPerPage);
+	
+	
+	// 검색
+		String search =  request.getParameter("search");
+		if(search != null &&!search.equals("")) {
+			
+		//요청값 받기
+		String selectSearch = request.getParameter("selectSearch");
+		search = request.getParameter("search");
+					
+		// 디버깅
+		System.out.println("selectSearch "+selectSearch);
+		System.out.println("selectSearch "+search);
+					
+		//요청값 넣기
+		GuestbookDao guestbookdao = new GuestbookDao();
+		list = guestbookdao.searchGuestbookListByPage(selectSearch, search, beginRow, rowPerPage);
+		}
 	
 	// 라스트페이지 설정
 	int lastPage = 0;
@@ -59,7 +80,15 @@
 				<p>GDJ46기 블로그과제</p>
 			</div>
 			<h1>방명록 목록(총 :<%=totalCount %> 개)</h1>
-		<!-- 방명록 입력 -->
+		<!-- 검색 및 방명록 입력 -->
+		<form action="<%=request.getContextPath()%>/guestbook/guestbookList.jsp" method="get">
+		<select class="form-select" name="selectSearch">
+			<option value="writer">글쓴이</option>
+			<option value="guestbookContent">내용</option>
+		</select>
+		<input type="text" name="search">
+		<button type="sumit" class="btn btn-dark">검색</button>
+		</form>
 		<form method="post" action="<%=request.getContextPath()%>/guestbook/insertGuestbookAction.jsp">
 			<button type="submit" class="btn-dark">방명록 입력</button>
 			<table border="1" class="table">
@@ -73,7 +102,6 @@
 					<td colspan="4"><textarea name="guestbookContent" rows="2" cols="60" class="form-control"></textarea></td>
 				</tr>
 			</table>
-			
 		</form>
 		<% 
 			for(Guestbook g : list) {
@@ -95,6 +123,7 @@
 			}
 		%>
 		</div>
+		<div>
 		<%
 		if(currentPage > 1) {
 		%>
@@ -108,6 +137,7 @@
 		<%
 		}
 		%>
+		</div>
 		<!--  하단정보표시 -->
 		<jsp:include page="/inc/bottomMenu.jsp"></jsp:include>
 	</div>

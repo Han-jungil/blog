@@ -4,6 +4,9 @@
 <%@ page import = "vo.*" %>
 <%@page import ="dao.*" %>
 <%
+	//한글호환
+	request.setCharacterEncoding("utf-8");
+
 	// 페이지 설정
 		// boardList페이지 실행하면 최근 10개의 목록을 보요주고 1page로 설정
 		int currentPage = 1; // 현재페이지의 기본값이 1페이지
@@ -26,9 +29,30 @@
 		BoardDao boardDao = new BoardDao();
 		ArrayList<HashMap<String, Object>> categoryList = boardDao.categoryBoardTotalRow(categoryName);
 		
+		
 		// 카테고리별 행의 수
 		boardDao = new BoardDao();
 		ArrayList<Board> list = boardDao.selectBoardListByPage(categoryName, beginRow, rowPerPage);
+		
+		// 검색
+			String search =  request.getParameter("search");
+			if(search != null &&!search.equals("")) {
+				categoryName = "";
+	
+				//요청값 받기
+				categoryName = request.getParameter("categoryName");
+				String selectSearch = request.getParameter("selectSearch");
+				search = request.getParameter("search");
+				
+				// 디버깅
+				System.out.println("selectSearch "+categoryName);
+				System.out.println("selectSearch "+selectSearch);
+				System.out.println("selectSearch "+search);
+				
+				//요청값 넣기
+				boardDao = new BoardDao();
+				list = boardDao.searchBoardListByPage(selectSearch, search, categoryName, beginRow, rowPerPage);
+			}
 		
 		// 전체 행의수
 		int totalCount = boardDao.boardTotalRow();
@@ -36,7 +60,6 @@
 		// 마지막페이지 설정
 		int lastPage = 0;
 		lastPage = (int)(Math.ceil((double)totalCount / (double)rowPerPage)); 
-		
 %>
 <!DOCTYPE html>
 <html>
@@ -83,27 +106,45 @@
 			</div>
 		<!-- 게시글 리스트(메인) -->
 		<div class="col-sm-8">
-		<!--  배너 -->
-		<div class="mt-4 p-5 bg-dark text-white rounded">
-		  <h1>구디아카데미</h1>
-		  <p>GDJ46기 블로그과제</p>
-		</div>
-		<h1>게시글 목록(총 : <%=totalCount %>개)</h1>
-		<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 입력</a>
-		<form action="<%=request.getContextPath()%>/board/searchBoardAction.jsp" method="post">
-		<select class="form-select" name="selectSearch">
-			<option value="categoryName">주제별</option>
-			<option value=" boardTitle">제목</option>
-			<option value="boardContent">내용</option>
-		</select>
-		<input type="text" name="search">
-		<button type="sumit" class="btn btn-dark">검색</button>
-		</form>
+     	<!--  배너 -->
+      <div class="mt-4 p-5 bg-dark text-white rounded">
+      	 	<h1>구디아카데미</h1>
+			<p>GDJ46기 블로그과제</p>
+      </div>
+      <h1>게시글 목록(총 : <%=totalCount %>개)</h1>
+      <form action="<%=request.getContextPath()%>/board/boardList.jsp" method="get">
+      <div  class="row">
+      <div class = "col-sm-4">
+         <a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 입력</a>
+      </div>
+      <div class = "col-sm-8">
+         <p class ="text-right"> 
+            <select class="form-select" name="categoryName">
+            <option value="">전체</option>
+                  <%
+                     for(HashMap<String, Object> m : categoryList) {
+                  %>
+                           <option><%=m.get("categoryName")%></option>
+                  <%
+                     }
+                  %>
+            </select>
+            <select class="form-select" name="selectSearch">
+               <option value="boardTitle">제목</option>
+               <option value="boardContent">내용</option>
+               <option value="boardTitleContent">제목+내용</option>
+            </select>
+            <input type="text" name="search">
+            <button type="submit" class="btn btn-dark">검색</button>
+         </p>
+      </div>
+      </div>
+      </form>
 		<table class="table table-hover">
 			<thead>
 				<tr>
 					<th>categoryName</th>
-					<th>boardTitle</th>
+					<th>boardtitle</th>
 					<th>createDate</th>
 				</tr>
 			</thead>

@@ -1,5 +1,7 @@
 package dao;
 import java.util.ArrayList;
+
+import vo.Board;
 import vo.Guestbook;
 import java.sql.*;
 public class GuestbookDao {
@@ -225,4 +227,58 @@ public class GuestbookDao {
 			conn.close();
 			return list; //값 리턴
 			}
+			
+			// searchGuestbookList 검색
+			public ArrayList<Guestbook> searchGuestbookListByPage(String selectSearch, String search, int beginRow, int rowPerPage) throws Exception {
+				// 데이터베이스 자원 준비
+				ArrayList<Guestbook> list = new ArrayList<Guestbook>();
+				Class.forName("org.mariadb.jdbc.Driver");
+				System.out.println("드라이버 로딩 성공"); //디버깅
+				Connection conn = null;
+				PreparedStatement stmt = null;
+				ResultSet rs = null;
+				String sql = null;
+				
+				// 디비접속
+				String dburl = "jdbc:mariadb://localhost:3306/blog";
+				String dbuser = "root";
+				String dbpw = "java1234";
+				conn = DriverManager.getConnection(dburl, dbuser, dbpw);
+				System.out.println("conn : " + conn); // 디버깅
+				
+				// SQL문 실행
+				if(selectSearch.equals("writer")) {	//	글쓴이면
+					sql = "SELECT guestbook_no guestbookNo, guestbook_content guestbookContent, writer, create_date createDate FROM guestbook WHERE writer LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+					stmt = conn.prepareStatement(sql);
+					stmt.setString(1, "%"+search+"%");
+					stmt.setInt(2, beginRow);
+					stmt.setInt(3, rowPerPage);
+				} else {	// 내용이면
+					sql = "SELECT guestbook_no guestbookNo, guestbook_content guestbookContent, writer, create_date createDate FROM guestbook WHERE guestbook_content LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
+					stmt = conn.prepareStatement(sql);	//?값 구하기
+					stmt.setString(1, "%"+search+"%");
+					stmt.setInt(2, beginRow);
+					stmt.setInt(3, rowPerPage);
+				}
+				System.out.println("sql searchBoardListByPage : " + stmt);	//디버깅
+				rs = stmt.executeQuery();
+				// 데이터베이스 로직 끝
+				
+				// 데이터 변환(가공)
+				while(rs.next()) {
+					Guestbook g = new Guestbook();
+					g.setGuestbookNo(rs.getInt("guestbookNo"));		
+					g.setWriter(rs.getString("writer"));		
+					g.setGuestbookContent(rs.getString("guestbookContent"));							
+					g.setCreateDate(rs.getString("createDate"));	
+					list.add(g);
+				}
+				
+				// 데이터베이스 자원들 반환
+				rs.close();
+				stmt.close();
+				conn.close();
+				return list;	// 값 리턴
+			}
+		
 }

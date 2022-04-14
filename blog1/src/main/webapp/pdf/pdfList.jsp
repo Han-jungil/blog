@@ -3,6 +3,9 @@
 <%@ page import="vo.*" %>
 <%@ page import="dao.*" %>
 <%
+	//한글호환
+	request.setCharacterEncoding("utf-8");
+
 	//페이지 설정
 	int currentPage = 1; // 현재페이지의 기본값이 1페이지
 	if(request.getParameter("currentPage") != null) { // 이전, 다음 링크를 통해서 들어왔다면
@@ -17,6 +20,23 @@
 	// pdf 갯수를 반환 
 	PdfDao pdfDao = new PdfDao();
 	ArrayList<Pdf> list = pdfDao.selectPdfListByPage(beginRow, rowPerPage);
+	
+	// 검색
+		String search =  request.getParameter("search");
+		if(search != null &&!search.equals("")) {
+				
+			//요청값 받기
+			String selectSearch = request.getParameter("selectSearch");
+			search = request.getParameter("search");
+							
+			// 디버깅
+			System.out.println("selectSearch "+selectSearch);
+			System.out.println("selectSearch "+search);
+						
+			//요청값 넣기
+			PdfDao pdfdao = new PdfDao();
+			list = pdfdao.searchPdfListByPage(selectSearch, search, beginRow, rowPerPage);
+		}
 	
 	// 전체 행의수
 	int totalCount = pdfDao.selectPdfTotalRow();
@@ -57,15 +77,30 @@
 				<p>GDJ46기 블로그과제</p>
 			</div>
 			<h1>pdf 목록(총 :<%=totalCount %> 개)</h1>
-			<div>
+		<form action="<%=request.getContextPath()%>/pdf/pdfList.jsp" method="get">
+		<div class= "row">
+		<div class = "col-sm-4">
 				<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/pdf/insertPdfForm.jsp">pdf 입력</a>
-			</div>
+		</div>	
+		<div class = "col-sm-8">
+         <p class ="text-right"> 
+			<select class="form-select" name="selectSearch">
+				<option value="writer">글쓴이</option>
+				<option value="originalName">pdf이름</option>
+			</select>
+			<input type="text" name="search">
+			<button type="sumit" class="btn btn-dark">검색</button>
+		</form>
+		</p>
+		</div>
+		</div>
 		<!-- 이미지 입력 -->
 		<table  class="table table-hover">
 			<thead>
 				<tr>
 					<td>pdf</td>
 					<td>글쓴이</td>
+					<td>작성날짜</td>
 					<td>삭제여부</td>
 				</tr>
 			</thead>
@@ -76,6 +111,7 @@
 					<tr>
 						<td><%=p.getPdfOriginalName()%></td>
 						<td><%=p.getWriter()%></td>
+						<td><%=p.getCreateDate() %>
 						<td><a class = "btn bg-dark text-white" href="<%=request.getContextPath()%>/pdf/deletePdfForm.jsp?pdfNo=<%=p.getPdfNo()%>&pdfName=<%=p.getPdfOriginalName() %>">삭제</a></td>
 					</tr>
 				<%
