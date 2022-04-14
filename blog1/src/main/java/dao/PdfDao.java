@@ -176,13 +176,13 @@ public class PdfDao {
 				System.out.println("conn : " + conn); // 디버깅
 				
 				// SQL문 실행
-				if(selectSearch.equals("writer")) {	//	검색이 공백이면
+				if(selectSearch.equals("writer")) {	//	작성자검색이면
 					sql = "SELECT pdf_no pdfNo, pdf_original_name pdfOriginalName, writer, create_date createDate FROM pdf WHERE writer LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
 					stmt = conn.prepareStatement(sql);
 					stmt.setString(1, "%"+search+"%");
 					stmt.setInt(2, beginRow);
 					stmt.setInt(3, rowPerPage);
-				} else {	// 검색이 공백이 아니고 제목+내용검색인 경우
+				} else {	// pdf이름이면
 					sql = "SELECT pdf_no pdfNo, pdf_original_name pdfOriginalName, writer, create_date createDate FROM pdf WHERE pdf_original_name  LIKE ? ORDER BY create_date DESC LIMIT ?, ?";
 					stmt = conn.prepareStatement(sql);	//?값 구하기
 					stmt.setString(1, "%"+search+"%");
