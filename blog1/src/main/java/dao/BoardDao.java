@@ -11,13 +11,13 @@ public class BoardDao {
 			// 데이터베이스 자원 준비
 			Class.forName("org.mariadb.jdbc.Driver");
 			System.out.println("드라이버 로딩 성공"); //디버깅
-			Board board = null;
+			Board board = null; 
 			Connection conn = null;
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
 			
 			// 디비접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog"; //주소
+			String dburl = "3.39.254.208/blog"; //주소
 			String dbuser = "root";	//유저이름
 			String dbpw = "java1234";	//비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
@@ -59,7 +59,7 @@ public class BoardDao {
 			PreparedStatement stmt = null;
 			
 			// 디비접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog";	//주소
+			String dburl = "3.39.254.208/blog";	//주소
 			String dbuser = "root";	//유저이름
 			String dbpw = "java1234";	//비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
@@ -96,7 +96,7 @@ public class BoardDao {
 			PreparedStatement stmt = null;
 			
 			// 디비접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog"; //주소
+			String dburl = "3.39.254.208/blog"; //주소
 			String dbuser = "root";	//유저이름
 			String dbpw = "java1234";	//비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
