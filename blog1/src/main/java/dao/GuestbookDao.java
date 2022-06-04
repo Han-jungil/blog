@@ -17,9 +17,9 @@ public class GuestbookDao {
 			PreparedStatement stmt = null;
 			
 			// 디비접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog"; //주소
+			String dburl = "jdbc:mariadb://3.39.254.208/blog"; //주소
 			String dbuser = "root";	// 유저이름
-			String dbpw = "java1234"; //비밀번호
+			String dbpw = "mariadb1234"; //비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
 			System.out.println("conn : " + conn); // 디버깅
 			
@@ -54,9 +54,9 @@ public class GuestbookDao {
 			ResultSet rs = null;
 			
 			// 디비 접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog";// 주소
+			String dburl = "jdbc:mariadb://3.39.254.208/blog";// 주소
 			String dbuser = "root"; // 유저이름
-			String dbpw = "java1234"; //비밀번호
+			String dbpw = "mariadb1234"; //비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
 			System.out.println("conn : " + conn); // 디버깅
 			
@@ -92,9 +92,9 @@ public class GuestbookDao {
 			PreparedStatement stmt = null;
 			
 			// 디비 접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog"; // 주소
+			String dburl = "jdbc:mariadb://3.39.254.208/blog"; // 주소
 			String dbuser = "root"; //유저이름
-			String dbpw = "java1234"; //비밀번호
+			String dbpw = "mariadb1234"; //비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
 			System.out.println("conn : " + conn); // 디버깅
 			
@@ -123,9 +123,9 @@ public class GuestbookDao {
 			Connection conn = null;
 			PreparedStatement stmt = null;
 			
-			String dburl = "jdbc:mariadb://localhost:3306/blog";
+			String dburl = "jdbc:mariadb://3.39.254.208/blog";
 			String dbuser = "root";
-			String dbpw = "java1234";
+			String dbpw = "mariadb1234";
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw);
 			System.out.println("conn : " + conn); // 디버깅
 			
@@ -160,9 +160,9 @@ public class GuestbookDao {
 			ResultSet rs = null;
 			
 			// 디비 접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog"; // 주소
+			String dburl = "jdbc:mariadb://3.39.254.208/blog"; // 주소
 			String dbuser = "root"; // 유저이름
-			String dbpw = "java1234"; // 비밀번호
+			String dbpw = "mariadb1234"; // 비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
 			
 			// SQL 실행
@@ -196,9 +196,9 @@ public class GuestbookDao {
 			ResultSet rs = null;
 			
 			// 디비 접속
-			String dburl = "jdbc:mariadb://localhost:3306/blog"; // 주속
+			String dburl = "jdbc:mariadb://3.39.254.208/blog"; // 주속
 			String dbuser = "root"; // 유저이름
-			String dbpw = "java1234"; // 비밀번호
+			String dbpw = "mariadb1234"; // 비밀번호
 			conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
 			System.out.println("conn : " + conn); // 디버깅
 			
@@ -240,9 +240,9 @@ public class GuestbookDao {
 				String sql = null;
 				
 				// 디비접속
-				String dburl = "jdbc:mariadb://localhost:3306/blog";
+				String dburl = "jdbc:mariadb://3.39.254.208/blog";
 				String dbuser = "root";
-				String dbpw = "java1234";
+				String dbpw = "mariadb1234";
 				conn = DriverManager.getConnection(dburl, dbuser, dbpw);
 				System.out.println("conn : " + conn); // 디버깅
 				
