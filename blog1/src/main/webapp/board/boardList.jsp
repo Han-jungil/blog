@@ -23,6 +23,10 @@
 		
 		// 페이지 바뀌면 끝이 아니고, 가지고 오는 데이터가 변경되어야 한다.
 		int rowPerPage = 10;
+		if(request.getParameter("rowPerPage")!= null){//rowPerPage가 null이 아니면 요청값 저장
+			rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));
+		}
+		
 		int beginRow = (currentPage-1)*rowPerPage; // 현재페이지가 변경되면 beginRow도 변경된다. -> 가져오는 데이터 변경된다.
   		
 		// 케테고리별 갯수를 반환 
@@ -111,11 +115,31 @@
       	 	<h1>구디아카데미</h1>
 			<p>GDJ46기 블로그과제</p>
       </div>
-      <h1>게시글 목록(총 : <%=totalCount %>개)</h1>
+      <div class="row">
+      		<div class = "col-sm-8">
+      			<h1>게시글 목록(총 : <%=totalCount %>개)</h1>
+      		</div>
+      		<div class = "col-sm-4">
+      		<div>&nbsp;</div>
+	      		<form method ="post" action ="<%=request.getContextPath()%>/board/boardList.jsp">
+		      	게시글 : <%=rowPerPage %>개
+		       	<select name="rowPerPage" onchange="this.form.submit()">
+		       		<option value="">범위선택</option>
+		       		<option value="5" >5개씩</option>
+		       		<option value="10">10개씩</option>
+		       		<option value="15">15개씩</option>
+		       		<option value="20">20개씩</option>
+		       		<option value="25">25개씩</option>
+		       		<option value="30">30개씩</option>
+		       		<input type="hidden" name="currentPage" value="<%=currentPage%>">
+		       	</select>
+		     </form>
+	     </div>
+      </div>
       <form action="<%=request.getContextPath()%>/board/boardList.jsp" method="get">
       <div  class="row">
       <div class = "col-sm-4">
-         <a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 입력</a>
+      	 <a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/insertBoardForm.jsp">게시글 입력</a>
       </div>
       <div class = "col-sm-8">
          <p class ="text-right"> 
@@ -170,6 +194,16 @@
 					<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage-1%>&categoryName=<%=categoryName%>">이전</a>&nbsp&nbsp&nbsp
 			<%	
 				}
+				for(int i = currentPage; i < currentPage+10; i++) {
+				if(i <= lastPage ) {
+			%>
+				
+				<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=i%>&categoryName=<%=categoryName%>"><%=i%></a>&nbsp&nbsp&nbsp
+			<%
+					}
+				}
+			%>
+			<%
 				if(currentPage < lastPage) { // 마지막페이지가 있다면 
 			%>
 					<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=currentPage+1%>&categoryName=<%=categoryName%>">다음</a>&nbsp&nbsp&nbsp
