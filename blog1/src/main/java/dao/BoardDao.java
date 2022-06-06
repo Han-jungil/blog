@@ -158,7 +158,7 @@ public class BoardDao {
 			}
 		
 		// 전체 행의 수를 반환 메서드(총합) - boardTotalRow
-			public int boardTotalRow() throws Exception {
+			public int boardTotalRow(String categoryName) throws Exception {
 			// 데이터베이스 자원 준비
 			int row = 0;
 			Class.forName("org.mariadb.jdbc.Driver");
@@ -175,8 +175,16 @@ public class BoardDao {
 			System.out.println("conn : " + conn); // 디버깅
 			
 			// SQL 실행
-			String sql = "SELECT COUNT(*) cnt FROM board";
-			stmt = conn.prepareStatement(sql);
+			String sql = "";
+			if(categoryName.equals("")) {
+				sql = "SELECT COUNT(*) cnt FROM board";
+				stmt = conn.prepareStatement(sql);
+			} else {
+				sql = "SELECT COUNT(*) cnt FROM board where category_name = ?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, categoryName);
+			}
+			
 			System.out.println("sql boardTotalRow : " + stmt);	//디버깅
 			rs = stmt.executeQuery();
 			// 데이터베이스 로직 끝

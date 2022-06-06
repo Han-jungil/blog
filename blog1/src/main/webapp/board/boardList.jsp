@@ -37,7 +37,8 @@
 		// 카테고리별 행의 수
 		boardDao = new BoardDao();
 		ArrayList<Board> list = boardDao.selectBoardListByPage(categoryName, beginRow, rowPerPage);
-		
+		System.out.println("categoryName : "+categoryName);
+		System.out.println("list.size() : "+list.size());
 		// 검색
 			String search =  request.getParameter("search");
 			if(search != null &&!search.equals("")) {
@@ -59,11 +60,15 @@
 			}
 		
 		// 전체 행의수
-		int totalCount = boardDao.boardTotalRow();
+		int totalCount = boardDao.boardTotalRow(categoryName);
 		
 		// 마지막페이지 설정
 		int lastPage = 0;
-		lastPage = (int)(Math.ceil((double)totalCount / (double)rowPerPage)); 
+		lastPage = (int)(Math.ceil((double)totalCount / (double)rowPerPage));
+		if(totalCount%rowPerPage != 0) {
+			lastPage += 1;
+		}
+
 %>
 <!DOCTYPE html>
 <html>
@@ -195,7 +200,7 @@
 			<%	
 				}
 				for(int i = currentPage; i < currentPage+10; i++) {
-				if(i <= lastPage ) {
+				if(i < lastPage ) {
 			%>
 				
 				<a class="btn bg-dark text-white" href="<%=request.getContextPath()%>/board/boardList.jsp?currentPage=<%=i%>&categoryName=<%=categoryName%>"><%=i%></a>&nbsp&nbsp&nbsp
